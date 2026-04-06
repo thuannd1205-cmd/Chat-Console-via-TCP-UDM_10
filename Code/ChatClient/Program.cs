@@ -25,6 +25,11 @@ class Program
         while (true)
         {
             string input = Console.ReadLine();
+            if (input.ToLower() == "exit")
+            {
+                logic.Exit();
+                break;
+            }
 
             if (input.StartsWith("@"))
             {
