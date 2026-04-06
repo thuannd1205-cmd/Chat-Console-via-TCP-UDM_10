@@ -107,3 +107,26 @@ class ClientLogic
         }
     }
 }
+
+    //Exit
+    public void Exit()
+    {
+        try
+        {
+            isRunning = false;
+
+            string exitMsg = $"EXIT|{username}||";
+            byte[] data = Encoding.UTF8.GetBytes(exitMsg);
+            client.Send(data);
+
+            client.Shutdown(SocketShutdown.Both);
+            client.Close();
+
+            Console.WriteLine("Đã thoát khỏi server!");
+        }
+        catch
+        {
+            Console.WriteLine("Lỗi khi thoát!");
+        }
+    }
+}
