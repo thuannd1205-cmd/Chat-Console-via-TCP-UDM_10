@@ -1,49 +1,75 @@
-
 using System;
-using System.Net;
+using System.IO;
 using System.Net.Sockets;
-using ChatClient;
+using System.Threading;
 
 class Program
 {
+    static string myName = "";
+    static string currentTarget = "ALL"; // Mặc định nhắn cho tất cả
+
     static void Main()
     {
-        Socket client = new Socket(AddressFamily.InterNetwork, SocketType.Stream, ProtocolType.Tcp);
-        client.Connect(IPAddress.Parse("127.0.0.1"), 5000);
-
-        Console.Write("Nhập username: ");
-        string username = Console.ReadLine();
-
-        ClientLogic logic = new ClientLogic(client, username);
-
-        // Gửi login
-        logic.Send($"LOGIN|{username}||");
-
-        // Bắt đầu luồng nhận
-        logic.Start();
-
-        // Luồng gửi (main thread)
-        while (true)
+        try
         {
-            string input = Console.ReadLine();
-            if (input.ToLower() == "exit")
+            TcpClient tcpClient = new TcpClient("127.0.0.1", 9090);
+            StreamReader reader = new StreamReader(tcpClient.GetStream());
+            StreamWriter writer = new StreamWriter(tcpClient.GetStream()) { AutoFlush = true };
+
+            while (true)
             {
-                logic.Exit();
-                break;
+                string msg = reader.ReadLine();
+                if (msg == "NHAP_USER")
+                {
+                    Console.Write("Nhập tên bạn: ");
+                    writer.WriteLine(Console.ReadLine());
+                }
+                else if (msg.StartsWith("OK_WELCOME"))
+                {
+                    myName = msg.Split('|')[1];
+                    Console.Clear();
+                    Console.WriteLine($"=== CHÀO {myName.ToUpper()}! ===");
+                    Console.WriteLine("LỆNH: /to <tên> (để ghim người nhận), /create <nhóm>, /join <nhóm>, /list");
+                    break;
+                }
             }
 
-            if (input.StartsWith("@"))
-            {
-                string[] parts = input.Split(' ');
-                string receiver = parts[0].Substring(1);
-                string message = input.Substring(parts[0].Length + 1);
+            new Thread(() => {
+                try
+                {
+                    string s;
+                    while ((s = reader.ReadLine()) != null)
+                    {
+                        Console.WriteLine("\n" + s);
+                        Console.Write($"[{currentTarget}] > ");
+                    }
+                }
+                catch { }
+            }).Start();
 
-                logic.Send($"MSG|{username}|{receiver}|{message}");
-            }
-            else
+            while (true)
             {
-                logic.Send($"ALL|{username}||{input}");
+                Console.Write($"[{currentTarget}] > ");
+                string input = Console.ReadLine();
+                if (string.IsNullOrEmpty(input)) continue;
+
+                if (input.StartsWith("/to "))
+                {
+                    currentTarget = input.Substring(4).Trim();
+                    Console.WriteLine($">>> Đã chuyển chế độ nhắn cho: {currentTarget}");
+                }
+                else if (input.StartsWith("/"))
+                {
+                    writer.WriteLine(input); // Gửi lệnh trực tiếp (list, create, join...)
+                }
+                else
+                {
+                    // Nếu đang ghim một ai đó hoặc nhóm, tự động chuyển thành lệnh /send
+                    if (currentTarget == "ALL") writer.WriteLine(input);
+                    else writer.WriteLine($"/send {currentTarget} {input}");
+                }
             }
         }
+        catch (Exception ex) { Console.WriteLine("Lỗi: " + ex.Message); }
     }
 }
