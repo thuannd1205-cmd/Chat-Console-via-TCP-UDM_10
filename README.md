@@ -50,7 +50,7 @@ Ví dụ:
 
 ### Gửi tin nhắn riêng trực tiếp
 
-/send <ten>
+/send <ten> <noi_dung>
 ---
 
 ### Kiểm tra user / nhóm
