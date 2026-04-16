@@ -1,1 +1,166 @@
-text
+BỘ GIAO THÔNG VẬN TẢI
+TRƯỜNG ĐH GIAO THÔNG VẬN TẢI TP.HCM
+----------
+ 
+BÁO CÁO MÔN HỌC: LẬP TRÌNH MẠNG
+ĐỀ TÀI : Lập trình ứng dụng Chat (Console) via TCP
+Nhóm thực hiện: UDM_10
+STT	Họ và Tên	MSSV
+1	Võ Kim Thu Phương	054306009261
+2	Võ Ngọc Vân Anh	086306008076
+3	Bạch Hoàng Huy	077206010374
+4	Nguyễn Duy Việt	052206010588
+5	Nguyễn Công Tấn	087206015150
+6	Nguyễn Duy Thuần	072206001205
+
+MỤC LỤC
+I. THÔNG TIN VỀ DỰ ÁN:	1
+1.	Mục đích:	1
+1.1.	Mở đầu:	1
+1.2.	Mục tiêu dự án:	1
+2.	Lý thuyết sơ lược:	1
+2.1.	Mô hình Client-Server:	2
+2.2.	Giao thức TCP:	2
+2.2.1.	Đặc điểm của TCP	2
+2.2.2.	Lý do sử dụng TCP	2
+2.3.	Lập trình Socket:	3
+2.3.1.	Cơ chế hoạt động của Socket trong hệ thống	3
+2.4.	Kỹ thuật đa luồng:	3
+2.4.1.	Xử lý đa nhiệm phía Server	3
+2.4.2.	Xử lý song song phía Client	4
+3.	Giao thức hệ thống:	4
+3.1.	Giao thức câu lệnh:	4
+3.2.	Quản lý trạng thái và giải phóng tài nguyên:	5
+II. THÀNH QUẢ - KHÓ KHĂN VÀ BÀI HỌC KINH NGHIỆM:	5
+1.	Những khó khăn kỹ thuật:	5
+2.	Bài học kinh nghiệm:	5
+2.1.	Quản trị mã nguồn với GitHub:	5
+2.2.	Lập trình bất đồng bộ:	6
+2.3.	Xử lý định dạng luồng dữ liệu:	6
+III. THÀNH QUẢ - NHỮNG GÌ ĐÃ LÀM VÀ CHƯA LÀM ĐƯỢC:	6
+1.	Những gì đã hoàn thành:	6
+2.	Những gì chưa đạt được và hạn chế:	7
+IV. KẾT LUẬN VÀ HƯỚNG PHÁT TRIỂN:	8
+1. Kết luận:	8
+2. Hướng phát triển:	8
+
+ 
+I. THÔNG TIN VỀ DỰ ÁN:
+1.	Mục đích:
+1.1.	Mở đầu:
+-	Trong kỷ nguyên công nghệ thông tin hiện nay, giao tiếp trực tuyến ngày càng trở nên quan trọng. Các ứng dụng nhắn tin như Messenger hay Zalo đã trở thành một phần thiết yếu trong đời sống hàng ngày. Dựa trên ý tưởng đó, dự án này tập trung phát triển một ứng dụng chat (chat application) đơn giản trên giao diện dòng lệnh (console-based), cho phép người dùng kết nối và giao tiếp với nhau qua mạng.
+-	Ứng dụng được thiết kế theo mô hình Client-Server (Khách-Chủ), trong đó Server đóng vai trò điều phối trung tâm và các Client đại diện cho người dùng tham gia vào hệ thống.
+1.2.	Mục tiêu dự án:
+-	Các mục tiêu chính của dự án bao gồm:
++	Tìm hiểu cơ chế hoạt động của mô hình Client-Server.
++	Nghiên cứu và áp dụng giao thức TCP (Transmission Control Protocol) trong truyền tải dữ liệu.
++	Xây dựng một ứng dụng chat cơ bản với các tính năng:
+•	Đăng nhập người dùng (User login).
+•	Xem danh sách người dùng đang trực tuyến (Online user list).
+•	Gửi tin nhắn riêng cho một người dùng cụ thể (Private messaging).
+•	Gửi tin nhắn quảng bá cho tất cả người dùng (Broadcasting).
+ Ngoài ra, dự án còn giúp cải thiện kỹ năng lập trình và tư duy thiết kế hệ thống.
+2.	Lý thuyết sơ lược:
+2.1.	Mô hình Client-Server:
+-	Mô hình Client-Server là một kiến trúc được sử dụng rộng rãi trong các hệ thống mạng.
+•	Server: Thành phần trung tâm có nhiệm vụ tiếp nhận yêu cầu (requests) từ phía client, xử lý dữ liệu và gửi phản hồi (responses) trở lại.
+•	Client: Ứng dụng phía người dùng, thực hiện gửi yêu cầu tới server và hiển thị kết quả nhận được.
+-	Mô hình này giúp hệ thống dễ quản lý, có khả năng mở rộng (scalable) và đảm bảo tính nhất quán giữa các người dùng.
+-	Trong hệ thống này, các chức năng được thực thi thông qua một giao thức dựa trên câu lệnh (command-based protocol). Mỗi câu lệnh tương ứng với một chức năng cụ thể, giúp việc giao tiếp giữa client và server trở nên đơn giản và rõ ràng.
+2.2.	Giao thức TCP:
+-	TCP là một trong những giao thức cốt lõi của bộ giao thức Internet (IP suite), được sử dụng để truyền tải dữ liệu giữa các thiết bị qua mạng.
+2.2.1.	Đặc điểm của TCP
+-	Hướng kết nối (Connection-oriented): Phải thiết lập kết nối (bắt tay) trước khi truyền dữ liệu.
+-	Độ tin cậy cao (Reliable): Đảm bảo dữ liệu được chuyển đến đầy đủ, không bị thất lạc.
+-	Truyền theo thứ tự (Ordered delivery): Các gói tin dữ liệu được tiếp nhận theo đúng thứ tự mà chúng đã gửi đi.
+-	Kiểm soát lỗi (Error control): Phát hiện lỗi và truyền lại (retransmit) dữ liệu bị mất khi cần thiết.
+2.2.2.	Lý do sử dụng TCP
+-	Một ứng dụng chat yêu cầu các yếu tố: không mất mát dữ liệu, nội dung tin nhắn chính xác và đúng thứ tự. Do đó, TCP phù hợp hơn so với các giao thức khác (như UDP) cho mục đích này.
+2.3.	Lập trình Socket:
+-	Trong dự án này, việc truyền thông mạng được thực hiện thông qua thư viện System.Net.Sockets, cụ thể là hai lớp TCPListener (phía Server) và TCPClient (phía Client). Đây là các lớp bậc cao giúp đóng gói các lời gọi hệ thống Socket phức tạp thành các luồng dữ liệu (Stream).
+2.3.1.	Cơ chế hoạt động của Socket trong hệ thống
+-	Thiết lập Listener (Server): Server khởi tạo một đối tượng TcpListener tại địa chỉ IPAddress.Any và cổng 8888 để mở cổng lắng nghe. Hàm AcceptTcpClient() đóng vai trò là một điểm chặn (blocking); khi có kết nối đến, nó trả về một đối tượng TcpClient để thiết lập kênh giao tiếp riêng biệt cho từng Client.
+-	Kết nối Endpoint (Client): Client khởi tạo TcpClient("127.0.0.1", 8888) để thực hiện quá trình bắt tay (handshake) với Server qua địa chỉ IP và Port xác định.
+-	Quản lý luồng dữ liệu (Network Stream): Dữ liệu thô từ mạng được xử lý thông qua NetworkStream. Nhóm sử dụng mã hóa UTF-8 để chuyển đổi chuỗi ký tự (String) thành mảng byte trước khi gửi và ngược lại khi nhận. Điều này đảm bảo nội dung tin nhắn tiếng Việt có dấu được truyền tải chính xác, không bị lỗi hiển thị.
+2.4.	Kỹ thuật đa luồng:
+-	Đây là kỹ thuật cốt lõi giúp ứng dụng thoát khỏi hạn chế xử lý tuần tự, cho phép hệ thống thực hiện nhiều tác vụ như gửi và nhận tin nhắn cùng một lúc.
+2.4.1.	Xử lý đa nhiệm phía Server 
+-	Server được thiết kế để phục vụ đồng thời nhiều người dùng thông qua mô hình xử lý bất đồng bộ:
+•	Cơ chế Task.Run(): Mỗi khi một Client kết nối thành công, Server sẽ đẩy toàn bộ quy trình xử lý (nhận/phân tích gói tin) của Client đó vào một Task riêng biệt. Điều này giúp luồng chính của Server luôn ở trạng thái sẵn sàng để tiếp tục lắng nghe và chấp nhận các kết nối mới mà không bị gián đoạn.
+•	Điều phối tin nhắn: Các đối tượng luồng ghi của từng người dùng được lưu trữ trong một danh sách tập trung (Dictionary<string, TcpClient>). Khi cần chuyển tiếp tin nhắn (Broadcast hoặc Private), Server thực hiện truy xuất Socket tương ứng từ danh sách để đưa dữ liệu tới đúng đích đến.
+2.4.2.	Xử lý song song phía Client
+-	Để đảm bảo trải nghiệm người dùng mượt mà, Client được chia thành hai luồng hoạt động độc lập:
+•	Luồng Nhận (Background Thread): Sử dụng một luồng phụ chạy ngầm (Task.Run) để liên tục lắng nghe dữ liệu từ Server. Mọi thông tin hoặc tin nhắn gửi về sẽ được tiếp nhận và cập nhật lên màn hình (Console/WinForms) ngay lập tức.
+•	Luồng Giao diện/Nhập liệu (UI/Main Thread): Luồng chính quản lý việc tương tác của người dùng. Việc tách luồng giúp người dùng có thể soạn thảo tin nhắn mà không làm "treo" ứng dụng khi đang đợi dữ liệu từ mạng gửi về.
+3.	Giao thức hệ thống:
+3.1.	Giao thức câu lệnh:
+-	Nhóm sử dụng cấu trúc gói tin phân cách bằng ký tự “|”.
+Lệnh	Vai trò kỹ thuật
+LOGIN	Yêu cầu đăng nhập và kiểm tra tính hợp lệ của Nickname (tránh trùng tên).
+LIST	Server trả về danh sách các tài khoản đang trực tuyến cho Client.
+CHAT/MSG	Đóng gói nội dung hội thoại để Server điều hướng tới người nhận cụ thể hoặc tất cả.
+SYSTEM	Thông báo trạng thái hệ thống (Ví dụ: thông báo người mới gia nhập).
+EXIT	Thông báo ngắt kết nối để hệ thống giải phóng tài nguyên.
+
+3.2.	Quản lý trạng thái và giải phóng tài nguyên:
+-	Phát hiện ngắt kết nối: Hệ thống sử dụng các khối lệnh try-catch để nhận diện các lỗi ngoại lệ (Exception) khi đường truyền bị ngắt đột ngột.
+-	Dọn dẹp tài nguyên: Server thực hiện đóng Socket (Close()), hủy các luồng dữ liệu và loại bỏ thông tin Client khỏi danh sách quản lý để giải phóng bộ nhớ và đảm bảo danh sách Online luôn chính xác.
+II. THÀNH QUẢ - KHÓ KHĂN VÀ BÀI HỌC KINH NGHIỆM:
+1.	Những khó khăn kỹ thuật:
+-	Thiết lập Giao thức truyền thông (Protocol Design): Việc đảm bảo trao đổi dữ liệu nhất quán giữa các thành viên đòi hỏi thiết kế tỉ mỉ để ngăn ngừa mất mát dữ liệu và đảm bảo tính tương thích giữa các module.
+-	Đồng bộ hóa UI & Quản lý Luồng (Thread Management): Duy trì sự phản hồi của giao diện trong khi thực hiện các tác vụ nặng dưới nền là một thách thức lớn. Nhóm phải quản lý chặt chẽ việc đồng bộ hóa luồng để ngăn chặn lỗi "Ứng dụng không phản hồi" (ANR).
+-	Xử lý lỗi mạng: Đối mặt với các tình huống như độ trễ cao, mất gói tin và ngắt kết nối đột ngột đòi hỏi các cơ chế xử lý lỗi toàn diện để ứng dụng không bị sập (crash) bất ngờ.
+2.	Bài học kinh nghiệm:
+2.1.	Quản trị mã nguồn với GitHub:
+-	Nhóm đã chuyển từ việc sử dụng các câu lệnh đơn thuần sang tư duy quản lý dự án chuyên nghiệp:
+•	Quy trình làm việc (Workflow): Nắm vững mô hình Git Flow để phối hợp nhóm nhịp nhàng.
+•	Quản lý nhánh (Branching): Tách biệt các nhánh feature, develop và main để bảo vệ sản phẩm ổn định.
+•	Giải quyết xung đột (Conflict Resolution): Thành thạo kỹ năng xử lý khi mã nguồn bị chồng chéo lúc gộp (merge).
+•	Công cụ hỗ trợ: Sử dụng các công cụ so sánh (diff tool) để chọn lọc thay đổi chính xác và dùng Tag/Release để quản lý các cột mốc dự án.
+
+2.2.	Lập trình bất đồng bộ:
+
+-	Đây là kỹ năng then chốt giúp tối ưu hiệu suất ứng dụng:
+•	Cơ chế Event Loop: Hiểu cách hệ thống xử lý tác vụ chờ đợi (đọc/ghi dữ liệu) mà không gây treo giao diện.
+•	Tối ưu hóa mã nguồn: Sử dụng Async/Await giúp mã nguồn dễ đọc như kiểu viết tuần tự nhưng vẫn đảm bảo khả năng chạy song song.
+•	Xử lý ngoại lệ: Áp dụng try...catch để bắt lỗi kịp thời, đảm bảo ứng dụng vận hành bền bỉ.
+2.3.	Xử lý định dạng luồng dữ liệu:
+-	Nắm vững cách máy tính truyền tải dữ liệu ở cấp độ thấp:
+•	Cấu trúc nhị phân: Hiểu cách dữ liệu được phân rã thành Byte và Bit để truyền qua mạng.
+•	Tối ưu bộ đệm (Buffer): Sử dụng vùng đệm hợp lý để tiết kiệm tài nguyên và xử lý dữ liệu theo từng mảng nhỏ (Stream).
+•	Chuyển đổi dữ liệu: Linh hoạt trong việc chuyển đổi giữa dãy Byte sang các định dạng hiển thị.
+III. THÀNH QUẢ - NHỮNG GÌ ĐÃ LÀM VÀ CHƯA LÀM ĐƯỢC:
+1.	Những gì đã hoàn thành:
+Hệ thống hiện tại đã đáp ứng đầy đủ các yêu cầu cốt lõi về một ứng dụng chat đa luồng dựa trên giao thức TCP:
+-	Giao diện Console Tương tác thông minh (Smart Console UI):
+•	Xử lý nhập liệu bất đối xứng: Sử dụng Console.KeyAvailable để tách biệt luồng nhận tin nhắn và luồng soạn thảo, cho phép người dùng gõ văn bản liên tục mà không bị gián đoạn khi có tin nhắn mới đổ về.
+•	Cơ chế chống trôi chữ (Anti-overlap): Áp dụng kỹ thuật xóa dòng đệm và vẽ lại dấu nhắc lệnh (Prompt) giúp nội dung đang soạn thảo luôn nằm ở vị trí cố định, tạo trải nghiệm UX chuyên nghiệp.
+•	Điều hướng bằng lệnh (Command-driven): Các tính năng (Chat riêng, tạo nhóm, thoát) được kích hoạt qua tiền tố /, mô phỏng các hệ thống Terminal/IRC hiện đại.
+-	Hệ thống Server Đa luồng và Quản lý Tài nguyên (Multi-threaded Backend):
+•	Xử lý song song (Concurrency): Mỗi Client được quản lý bởi một Task riêng biệt, đảm bảo Server phản hồi tức thời cho hàng chục kết nối đồng thời.
+•	Cơ chế khóa an toàn (Thread-safety): Sử dụng lock khi truy xuất danh sách người dùng/nhóm để ngăn ngừa xung đột dữ liệu (Race Condition).
+•	Kiểm soát định danh: Tích hợp bộ lọc lỗi như ERR_TRUNG (Tên tồn tại), ERR_LENGTH (Tên không hợp lệ) ngay tại bước đăng nhập.
+-	Tính năng Chat Chuyên sâu và Trạng thái hoạt động (Presence Awareness):
+•	Đa dạng hình thức giao tiếp: Hỗ trợ đầy đủ Broadcast (Quảng bá), Private Chat (Nhắn tin riêng qua lệnh /send) và Group Management (Quản lý nhóm động).
+•	Xác nhận trạng thái ghim (Target Locking): Khi sử dụng lệnh /to, Client sẽ tự động chuyển sang trạng thái "ghim mục tiêu", thay đổi dấu nhắc lệnh thành [Target] > để tránh gửi nhầm tin nhắn.
+•	Thông báo thời gian thực: Tự động phát thông báo khi có thành viên gia nhập hoặc rời đi, giúp người dùng nắm bắt biến động của phòng chat mà không cần truy vấn thủ công.
+2.	Những gì chưa đạt được và hạn chế:
+-	Bên cạnh những kết quả đạt được, nhóm cũng nhận diện được các giới hạn cần được nâng cấp trong tương lai:
+•	Cơ chế xác thực còn đơn giản: Hệ thống mới chỉ định danh qua Nickname mà chưa có lớp mật khẩu bảo vệ. Bất kỳ ai cũng có thể sử dụng một cái tên mới để tham gia mà không cần qua quy trình kiểm tra quyền sở hữu tài khoản.
+•	Lưu trữ dữ liệu (Data Persistence): Toàn bộ lịch sử cuộc trò chuyện và danh sách người dùng chỉ tồn tại trên bộ nhớ tạm (RAM). Khi Server khởi động lại, mọi dữ liệu sẽ bị xóa sạch do chưa tích hợp hệ quản trị cơ sở dữ liệu (SQL/NoSQL).
+•	Truyền tải tệp tin (File Sharing): Ứng dụng hiện tại chỉ hỗ trợ định dạng văn bản thô (Plain text). Việc gửi các tệp tin đa phương tiện như hình ảnh, video hay tài liệu vẫn đang là một thách thức về mặt xử lý luồng dữ liệu nhị phân.
+•	Bảo mật đường truyền: Tin nhắn được truyền đi trên mạng chưa qua các lớp mã hóa nâng cao (như SSL/TLS), dẫn đến nguy cơ bị đánh chặn thông tin nếu môi trường mạng không an toàn.
+•	Giao diện người dùng trên Console: Do giới hạn của màn hình dòng lệnh, việc hiển thị tin nhắn đến đôi khi làm gián đoạn dòng lệnh đang nhập, gây khó khăn nhất định cho người dùng trong quá trình thao tác nhanh.
+IV. KẾT LUẬN VÀ HƯỚNG PHÁT TRIỂN:
+1. Kết luận:
+-	Nhóm đã xây dựng thành công ứng dụng Chat đa luồng trên nền tảng TCP/IP, đáp ứng đầy đủ các yêu cầu cốt lõi của đề tài như: Đăng nhập, quản lý danh sách trực tuyến và nhắn tin cá nhân/nhóm.
+-	Việc sử dụng kỹ thuật đa luồng (Multi-threading) đã giải quyết triệt để vấn đề phản hồi của hệ thống, giúp người dùng có trải nghiệm mượt mà ngay cả trên giao diện dòng lệnh.
+-	Dự án đã giúp các thành viên củng cố kiến thức về lập trình mạng Socket, quản lý luồng dữ liệu (Stream) và kỹ năng làm việc nhóm trên GitHub.
+2. Hướng phát triển:
+-	Tích hợp hệ quản trị cơ sở dữ liệu (SQL Server/SQLite) để lưu trữ lịch sử trò chuyện và thông tin tài khoản lâu dài.
+-	Nghiên cứu áp dụng các phương thức bảo mật nâng cao như mã hóa SSL/TLS để bảo vệ nội dung hội thoại trên đường truyền.
+-	Phát triển thêm tính năng truyền tải tệp tin (File sharing) và các tiện ích như icon cảm xúc (Emoji) để hoàn thiện ứng dụng.
+
+
+
+
