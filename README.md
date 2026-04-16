@@ -31,7 +31,7 @@ Hello moi nguoi
 
 ### Chat riêng (ghim người)
 
-/to <ten>
+/to <tennguoidung>
 
 Ví dụ:
 
@@ -50,12 +50,12 @@ Ví dụ:
 
 ### Gửi tin nhắn riêng trực tiếp
 
-/send <ten> <noi_dung>
+/send <tennguoidung> <noi_dung>
 ---
 
 ### Kiểm tra user / nhóm
 
-/check <ten>
+/check <tennguoidung>
 ---
 
 ### Thoát
