@@ -82,3 +82,114 @@ class Program
             tcpClient.Close();
         }
     }
+      // ===== PHẦN 3 + 4: COMMAND + GROUP =====
+    static void HandleCommand(string sender, string fullCommand, StreamWriter writer)
+    {
+        string[] parts = fullCommand.Split(' ', 3);
+        string cmd = parts[0].ToLower();
+
+        lock (lockObj)
+        {
+            switch (cmd)
+            {
+                // ===== PHẦN 3: LỆNH CƠ BẢN =====
+                case "/list":
+                    writer.WriteLine($"[HE THONG]: Online: {string.Join(", ", clients.Keys)}");
+                    break;
+
+                case "/check":
+                    if (parts.Length < 2) return;
+                    string target = parts[1];
+
+                    // Kiểm tra tồn tại user / group
+                    if (target.ToUpper() == "ALL" ||
+                        clients.ContainsKey(target) ||
+                        groups.ContainsKey(target))
+                        writer.WriteLine($"CHECK_OK|{target}");
+                    else
+                        writer.WriteLine($"CHECK_ERR|Khong tim thay '{target}'!");
+                    break;
+
+                case "/send":
+                    if (parts.Length < 3) return;
+                    string to = parts[1], msg = parts[2];
+
+                    // Gửi nhóm
+                    if (groups.ContainsKey(to))
+                    {
+                        if (groups[to].Contains(sender))
+                            GroupBroadcast(to, $"[{to}] {sender}: {msg}");
+                        else
+                            writer.WriteLine($"[LOI]: Ban phai /join {to} truoc!");
+                    }
+                    // Gửi riêng
+                    else if (clients.ContainsKey(to))
+                    {
+                        clients[to].WriteLine($"[RIENG tu {sender}]: {msg}");
+                        writer.WriteLine($"[RIENG toi {to}]: {msg}");
+                    }
+                    break;
+
+                // ===== PHẦN 4: GROUP =====
+                case "/create":
+                    if (parts.Length < 2) return;
+                    string gCreate = parts[1];
+
+                    if (!groups.ContainsKey(gCreate))
+                    {
+                        groups[gCreate] = new List<string> { sender };
+                        writer.WriteLine($"[HE THONG]: Da tao nhom '{gCreate}'");
+                    }
+                    break;
+
+                case "/join":
+                    if (parts.Length < 2) return;
+                    string gJoin = parts[1];
+
+                    if (groups.ContainsKey(gJoin) && !groups[gJoin].Contains(sender))
+                    {
+                        groups[gJoin].Add(sender);
+                        writer.WriteLine($"[HE THONG]: Da vao nhom '{gJoin}'");
+                    }
+                    break;
+
+                case "/leave":
+                    if (parts.Length < 2) return;
+                    string gLeave = parts[1];
+
+                    if (groups.ContainsKey(gLeave))
+                    {
+                        groups[gLeave].Remove(sender);
+                        writer.WriteLine($"[HE THONG]: Da roi nhom '{gLeave}'");
+                    }
+                    break;
+            }
+        }
+    }
+
+    // Gửi cho tất cả
+    static void Broadcast(string msg)
+    {
+        lock (lockObj)
+        {
+            foreach (var c in clients.Values)
+                try { c.WriteLine(msg); } catch { }
+        }
+    }
+
+    // Gửi trong nhóm
+    static void GroupBroadcast(string gName, string msg)
+    {
+        foreach (var m in groups[gName])
+            if (clients.ContainsKey(m))
+                clients[m].WriteLine(msg);
+    }
+
+    // Log server
+    static void LogServer(string log, ConsoleColor color = ConsoleColor.Gray)
+    {
+        Console.ForegroundColor = color;
+        Console.WriteLine($"{DateTime.Now:HH:mm:ss} - {log}");
+        Console.ResetColor();
+    }
+}
