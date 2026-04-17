@@ -160,6 +160,7 @@ IV. KẾT LUẬN VÀ HƯỚNG PHÁT TRIỂN:
 -	Tích hợp hệ quản trị cơ sở dữ liệu (SQL Server/SQLite) để lưu trữ lịch sử trò chuyện và thông tin tài khoản lâu dài.
 -	Nghiên cứu áp dụng các phương thức bảo mật nâng cao như mã hóa SSL/TLS để bảo vệ nội dung hội thoại trên đường truyền.
 -	Phát triển thêm tính năng truyền tải tệp tin (File sharing) và các tiện ích như icon cảm xúc (Emoji) để hoàn thiện ứng dụng.
+Link Video:https://www.youtube.com/watch?v=0yCMYChZpaM
 
 
 
