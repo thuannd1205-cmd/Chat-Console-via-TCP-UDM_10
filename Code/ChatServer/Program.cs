@@ -61,23 +61,31 @@ class Program
                 if (message.StartsWith("/")) HandleCommand(username, message, writer);
                 else
                 {
-                    LogServer($"{username}: {message}");
+                    Console.WriteLine($"{DateTime.Now:HH:mm:ss} - {username}: {message}");
                     Broadcast($"{username}: {message}");
                 }
             }
         }
-        catch { }
+        catch (Exception ex)
+        {
+            Console.WriteLine($"{DateTime.Now:HH:mm:ss} - Loi voi user {username}: {ex.Message}");
+        }
         finally
         {
             lock (lockObj)
             {
-                if (!string.IsNullOrEmpty(username))
-                {
-                    clients.Remove(username);
-                    foreach (var g in groups.Values) g.Remove(username);
-                    LogServer($"{username} thoat.", ConsoleColor.Yellow);
-                    Broadcast($"[HE THONG]: {username} da roi phong.");
-                }
+                if (!string.IsNullOrEmpty(username)) clients.Remove(username);
+                foreach (var group in groups.Values) group.Remove(username);
+            }
+
+            if (!string.IsNullOrEmpty(username))
+            {
+                string leaveMsg = $"[HE THONG]: {username} da roi phong chat.";
+                Console.ForegroundColor = ConsoleColor.Yellow;
+                Console.WriteLine($"{DateTime.Now:HH:mm:ss} - {leaveMsg}");
+                Console.ResetColor();
+
+                Broadcast(leaveMsg);
             }
             tcpClient.Close();
         }
